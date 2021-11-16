@@ -56,8 +56,27 @@ public class ConnectaBroIo implements Jugador, IAuto {
     }
 
     public Integer podaAlphaBetaMegaMax(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad){
-        return 1;
-    }
+        // Amenaza t.solucio(columna, -color)
+        if(profundidad == 0 || t.solucio(columna, -color) || !t.espotmoure()){
+            // Calculamos la heuristica
+            alpha = Eval(t, color);
+        }
 
+        int i = 0;
+        //boolean solution = false; ???????
+        boolean cut = false;
+        while(i < t.getMida() && !cut){
+            Tauler aux = new Tauler(t);
+            if(aux.movpossible(i)){
+                alpha = Math.max(alfa, -podaAlphaBetaMegaMax(aux, i, -color, -alfa, -beta, profundidad-1));
+            }
+            // Cortamos ramas
+            if(alpha >= beta) cut = true;
+
+            i++;
+        }   
+        return alpha;
+    }
+ 
 
 }
