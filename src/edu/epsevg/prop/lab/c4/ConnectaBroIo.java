@@ -10,6 +10,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
     
     public ConnectaBroIo(){
         nom = "ConnectaBroIo";
+        
     }
   
     public int moviment(Tauler t, int color){
