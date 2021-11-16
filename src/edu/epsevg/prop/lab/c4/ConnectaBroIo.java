@@ -77,6 +77,10 @@ public class ConnectaBroIo implements Jugador, IAuto {
         }   
         return alpha;
     }
- 
+
+    public Integer Eval(Tauler t, int color){
+        return 0;
+    }
+  
 
 }
