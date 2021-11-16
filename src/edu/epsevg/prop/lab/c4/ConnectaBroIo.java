@@ -30,7 +30,23 @@ public class ConnectaBroIo implements Jugador, IAuto {
             Tauler aux = new Tauler(t);
             if(aux.movpossible(i)){ // Miramos si se puede hacer el movimiento
                 aux.afegeix(i, color);
-
+                /*if(aux.solucio(i, color)){
+                    solution = true;
+                    col = i;
+                } else {
+                */
+                // Llamar a minimax, donde yo maximizo y el otro minimza
+                // -color porque yo entro con el color del adversario
+                // Yo entro maximizando, el adversario minimiza por eso -podaAlphaBetaMegaMax
+                alfa = Math.max(alfa, -podaAlphaBetaMegaMax(aux, i, -color, Alpha, Beta, profundidad));
+                // TODO 
+                col = i;
+                // Cut
+                /*if(heuristica >= Alpha){
+                    col = i;
+                    Alpha = heuristica;
+                }
+                */
             }
             
             i++;
@@ -39,6 +55,9 @@ public class ConnectaBroIo implements Jugador, IAuto {
         return col;
     }
 
-   
+    public Integer podaAlphaBetaMegaMax(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad){
+        return 1;
+    }
+
 
 }
