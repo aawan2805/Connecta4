@@ -8,6 +8,8 @@ package edu.epsevg.prop.lab.c4;
 public class ConnectaBroIo implements Jugador, IAuto {
     private String nom;
     private int profundidad;
+    private Integer Alpha = Integer.MIN_VALUE; // -infinito
+    private Integer Beta = Integer.MAX_VALUE; // +infinito
     
     public ConnectaBroIo(int profundidad){
         nom = "ConnectaBroIo";
@@ -20,11 +22,9 @@ public class ConnectaBroIo implements Jugador, IAuto {
   
     
     public int moviment(Tauler t, int color){
+        Integer valor = Integer.MIN_VALUE;
         int col = 0;
-        Integer heuristica = 0;
-        Integer Alpha = Integer.MIN_VALUE; // Alpha es -infinito
-        Integer Beta = Integer.MAX_VALUE; // Beta es +infinito
-
+        
         int i = 0;
         boolean solution = false;
         while(i < t.getMida() && !solution){
@@ -38,9 +38,8 @@ public class ConnectaBroIo implements Jugador, IAuto {
                     // Llamar a minimax, donde yo maximizo y el otro minimza
                     // -color porque yo entro con el color del adversario
                     // Yo entro maximizando, el adversario minimiza por eso -podaAlphaBetaMegaMax
-                    Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad);
-                    if(min > Alpha){
-                        Alpha = min;
+                    Integer min = MinValor(aux, i, color, Alpha, Beta, profundidad);
+                    if(valor < min){
                         col = i;
                     }
                 } 
@@ -49,7 +48,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
             i++;
         }
         
-        return Alpha;
+        return col;
     }
     /*
     public int moviment2(Tauler t, int color){
