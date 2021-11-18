@@ -84,7 +84,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
     }
     
     public Integer MaxValor(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad) {
-        if(profundidad == 0 || t.solucio(columna, -color) || !t.espotmoure()){
+        if(profundidad == 0 || esTerminal(t, columna, color)){
             // Calculamos la heuristica
             alpha = Eval(t, color);
         }
@@ -104,7 +104,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
     }
 
     public Integer MinValor(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad) {
-        if(profundidad == 0 || t.solucio(columna, color) || !t.espotmoure()){
+        if(profundidad == 0 || esTerminal(t, columna, color)){
             // Calculamos la heuristica
             alpha = Eval(t, color);
         }
