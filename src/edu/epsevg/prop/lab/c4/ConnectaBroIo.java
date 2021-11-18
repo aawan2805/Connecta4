@@ -23,7 +23,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
     
     public int moviment(Tauler t, int color){
         Integer valor = Integer.MIN_VALUE;
-        int col = 0;
+        int millorMoviment = 0;
         
         int i = 0;
         boolean solution = false;
@@ -33,20 +33,23 @@ public class ConnectaBroIo implements Jugador, IAuto {
                 aux.afegeix(i, color);
                 if(aux.solucio(i, color)){
                     solution = true;
-                    col = i;
+                    millorMoviment = i;
                 } else {
                     // El primer turno es del enemigo -> -color
-                    Integer min = MinValor(aux, i, color, Alpha, Beta, profundidad-1);
-                    if(valor < min){
-                        col = i;
+                    Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad-1);
+                    System.out.println("MIN -> " + min);
+                    if(min > min){
+                        millorMoviment = i;
+                        valor = min;
                     }
                 } 
             }
             
             i++;
         }
-        
-        return col;
+        System.out.println("COL -> " + millorMoviment);
+        System.out.println("VALOR -> " + valor);
+        return millorMoviment;
     }
     /*
     public int moviment2(Tauler t, int color){
@@ -92,6 +95,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
      * @param profundidad
      * @return
      */
+    /*
     public Integer podaAlphaBetaMegaMax(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad){
         // Amenaza t.solucio(columna, -color)
         if(profundidad == 0 || t.solucio(columna, -color) || !t.espotmoure()){
@@ -114,11 +118,12 @@ public class ConnectaBroIo implements Jugador, IAuto {
         }   
         return alpha;
     }
+    */
     
     public Integer MaxValor(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad) {
         if(profundidad == 0 || esTerminal(t, columna, color)){
             // Calculamos la heuristica
-            alpha = Eval(t, color);
+            return Eval(t, color);
         }
         
         Integer valor = Integer.MIN_VALUE; // -inf
@@ -126,7 +131,8 @@ public class ConnectaBroIo implements Jugador, IAuto {
             Tauler newTauler = new Tauler(t);
             if(newTauler.movpossible(i)){
                 newTauler.afegeix(i, color);
-                // Solución??
+                // TODO: Solución?? Devolver minInf??
+                // TODO: profundidad -1???
                 alpha = Math.max(valor, MinValor(newTauler, i, color, alpha, beta, profundidad-1));
             }
             // Cortamos ramas
@@ -140,7 +146,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
     public Integer MinValor(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad) {
         if(profundidad == 0 || esTerminal(t, columna, color)){
             // Calculamos la heuristica
-            alpha = Eval(t, color);
+            return Eval(t, color);
         }
         
         Integer valor = Integer.MAX_VALUE; // +inf
@@ -148,8 +154,9 @@ public class ConnectaBroIo implements Jugador, IAuto {
             Tauler newTauler = new Tauler(t);
             if(newTauler.movpossible(i)){
                 newTauler.afegeix(i, color);
-                // Solución
-                alpha = Math.min(alpha, MaxValor(newTauler, i, color, alpha, beta, profundidad-1));
+                // TODO: Solución?? Devolver maxInf???
+                // Es mi turno, me toca maximizar -> -color
+                alpha = Math.min(alpha, MaxValor(newTauler, i, -color, alpha, beta, profundidad-1));
             }
             // Cortamos ramas
             if(valor <= alpha) return valor;
@@ -169,7 +176,15 @@ public class ConnectaBroIo implements Jugador, IAuto {
     }
     
     public Integer Eval(Tauler t, int color){
-        return 0;
+        Integer h = 0;
+        
+        // Mirar vertical
+        
+        // Mirar horizontal
+        
+        // Mirar diagonal
+        
+        return h;
     }
   
 
