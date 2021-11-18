@@ -30,31 +30,36 @@ public class ConnectaBroIo implements Jugador, IAuto {
             Tauler aux = new Tauler(t);
             if(aux.movpossible(i)){ // Miramos si se puede hacer el movimiento
                 aux.afegeix(i, color);
-                /*if(aux.solucio(i, color)){
+                if(aux.solucio(i, color)){
                     solution = true;
                     col = i;
                 } else {
-                */
-                // Llamar a minimax, donde yo maximizo y el otro minimza
-                // -color porque yo entro con el color del adversario
-                // Yo entro maximizando, el adversario minimiza por eso -podaAlphaBetaMegaMax
-                alfa = Math.max(alfa, -podaAlphaBetaMegaMax(aux, i, -color, Alpha, Beta, profundidad));
-                // TODO 
-                col = i;
-                // Cut
-                /*if(heuristica >= Alpha){
-                    col = i;
-                    Alpha = heuristica;
-                }
-                */
+                    // Llamar a minimax, donde yo maximizo y el otro minimza
+                    // -color porque yo entro con el color del adversario
+                    // Yo entro maximizando, el adversario minimiza por eso -podaAlphaBetaMegaMax
+                    Integer x = -podaAlphaBetaMegaMax(aux, i, -color, Alpha, Beta, profundidad);
+                    if(x > Alpha){
+                        Alpha = x;
+                        col = i;
+                    }
+                } 
             }
-            
             i++;
         }
-
+        
         return col;
     }
 
+    /**
+     *
+     * @param t
+     * @param columna
+     * @param color
+     * @param alpha
+     * @param beta
+     * @param profundidad
+     * @return
+     */
     public Integer podaAlphaBetaMegaMax(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad){
         // Amenaza t.solucio(columna, -color)
         if(profundidad == 0 || t.solucio(columna, -color) || !t.espotmoure()){
@@ -68,7 +73,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
         while(i < t.getMida() && !cut){
             Tauler aux = new Tauler(t);
             if(aux.movpossible(i)){
-                alpha = Math.max(alfa, -podaAlphaBetaMegaMax(aux, i, -color, -alfa, -beta, profundidad-1));
+                alpha = Math.max(alpha, -podaAlphaBetaMegaMax(aux, i, -color, -alpha, -beta, profundidad-1));
             }
             // Cortamos ramas
             if(alpha >= beta) cut = true;
@@ -77,7 +82,48 @@ public class ConnectaBroIo implements Jugador, IAuto {
         }   
         return alpha;
     }
+    
+    public Integer MaxValor(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad) {
+        if(profundidad == 0 || t.solucio(columna, -color) || !t.espotmoure()){
+            // Calculamos la heuristica
+            alpha = Eval(t, color);
+        }
+        
+        Integer valor = Integer.MIN_VALUE; // -inf
+        for(int i=0; i < t.getMida(); i++){
+            Tauler aux = new Tauler(t);
+            if(aux.movpossible(i)){
+                alpha = Math.max(alpha, MinValor(aux, i, color, alpha, beta, profundidad-1));
+            }
+            // Cortamos ramas
+            if(beta <= valor) return valor;
+            alpha = Math.max(valor, alpha);
+        }
+        
+        return valor;
+    }
 
+    public Integer MinValor(Tauler t, int columna, int color, Integer alpha, Integer beta, int profundidad) {
+        if(profundidad == 0 || t.solucio(columna, color) || !t.espotmoure()){
+            // Calculamos la heuristica
+            alpha = Eval(t, color);
+        }
+        
+        Integer valor = Integer.MAX_VALUE; // -inf
+        for(int i=0; i < t.getMida(); i++){
+            Tauler aux = new Tauler(t);
+            if(aux.movpossible(i)){
+                alpha = Math.min(alpha, MaxValor(aux, i, color, alpha, beta, profundidad-1));
+            }
+            // Cortamos ramas
+            if(valor <= alpha) return valor;
+            alpha = Math.min(valor, alpha);
+        }
+        
+        return valor;
+    }
+
+    
     public Integer Eval(Tauler t, int color){
         return 0;
     }
