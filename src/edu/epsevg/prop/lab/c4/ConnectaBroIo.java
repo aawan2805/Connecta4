@@ -36,7 +36,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
                     col = i;
                 } else {
                     // El primer turno es del enemigo -> -color
-                    Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad-1);
+                    Integer min = MinValor(aux, i, color, Alpha, Beta, profundidad-1);
                     if(valor < min){
                         col = i;
                     }
