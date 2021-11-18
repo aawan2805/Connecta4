@@ -18,6 +18,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
         return nom;
     }
   
+    
     public int moviment(Tauler t, int color){
         int col = 0;
         Integer heuristica = 0;
@@ -37,19 +38,53 @@ public class ConnectaBroIo implements Jugador, IAuto {
                     // Llamar a minimax, donde yo maximizo y el otro minimza
                     // -color porque yo entro con el color del adversario
                     // Yo entro maximizando, el adversario minimiza por eso -podaAlphaBetaMegaMax
-                    Integer x = -podaAlphaBetaMegaMax(aux, i, -color, Alpha, Beta, profundidad);
-                    if(x > Alpha){
-                        Alpha = x;
+                    Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad);
+                    if(min > Alpha){
+                        Alpha = min;
                         col = i;
                     }
                 } 
             }
+            
             i++;
         }
         
-        return col;
+        return Alpha;
     }
+    /*
+    public int moviment2(Tauler t, int color){
+        int col = 0;
+        Integer heuristica = 0;
+        Integer Alpha = Integer.MIN_VALUE; // Alpha es -infinito
+        Integer Beta = Integer.MAX_VALUE; // Beta es +infinito
 
+        int i = 0;
+        boolean solution = false;
+        while(i < t.getMida() && !solution){
+            Tauler aux = new Tauler(t);
+            if(aux.movpossible(i)){ // Miramos si se puede hacer el movimiento
+                aux.afegeix(i, color);
+                if(aux.solucio(i, color)){
+                    solution = true;
+                    col = i;
+                } else {
+                    // Llamar a minimax, donde yo maximizo y el otro minimza
+                    // -color porque yo entro con el color del adversario
+                    // Yo entro maximizando, el adversario minimiza por eso -podaAlphaBetaMegaMax
+                    Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad);
+                    if(min > Alpha){
+                        Alpha = min;
+                        col = i;
+                    }
+                } 
+            }
+            
+            i++;
+        }
+        
+        return Alpha;
+    }
+    */
     /**
      *
      * @param t
@@ -109,7 +144,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
             alpha = Eval(t, color);
         }
         
-        Integer valor = Integer.MAX_VALUE; // -inf
+        Integer valor = Integer.MAX_VALUE; // +inf
         for(int i=0; i < t.getMida(); i++){
             Tauler aux = new Tauler(t);
             if(aux.movpossible(i)){
