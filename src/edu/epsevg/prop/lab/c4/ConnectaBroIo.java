@@ -166,6 +166,13 @@ public class ConnectaBroIo implements Jugador, IAuto {
         return valor;
     }
     
+    /**
+     * Función para calcular si el tablero ha llegado a una posible solución o si el tablero está lleno.
+     * @param t
+     * @param columna
+     * @param color
+     * @return 
+     */
     public boolean esTerminal(Tauler t, int columna, int color){
         boolean res = false;
         if(t.solucio(columna, color)){
@@ -175,6 +182,12 @@ public class ConnectaBroIo implements Jugador, IAuto {
         return res;
     }
     
+    /**
+     * Función para calcular la heurísitca
+     * @param t
+     * @param color
+     * @return 
+     */
     public Integer Eval(Tauler t, int color){
         Integer h = 0;
         
