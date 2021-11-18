@@ -8,8 +8,8 @@ package edu.epsevg.prop.lab.c4;
 public class ConnectaBroIo implements Jugador, IAuto {
     private String nom;
     private int profundidad;
-    private Integer Alpha = Integer.MIN_VALUE; // -infinito
-    private Integer Beta = Integer.MAX_VALUE; // +infinito
+    private static final Integer Alpha = Integer.MIN_VALUE; // -infinito
+    private static final Integer Beta = Integer.MAX_VALUE; // +infinito
     
     public ConnectaBroIo(int profundidad){
         nom = "ConnectaBroIo";
@@ -35,10 +35,8 @@ public class ConnectaBroIo implements Jugador, IAuto {
                     solution = true;
                     col = i;
                 } else {
-                    // Llamar a minimax, donde yo maximizo y el otro minimza
-                    // -color porque yo entro con el color del adversario
-                    // Yo entro maximizando, el adversario minimiza por eso -podaAlphaBetaMegaMax
-                    Integer min = MinValor(aux, i, color, Alpha, Beta, profundidad);
+                    // El primer turno es del enemigo -> -color
+                    Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad-1);
                     if(valor < min){
                         col = i;
                     }
@@ -125,9 +123,11 @@ public class ConnectaBroIo implements Jugador, IAuto {
         
         Integer valor = Integer.MIN_VALUE; // -inf
         for(int i=0; i < t.getMida(); i++){
-            Tauler aux = new Tauler(t);
-            if(aux.movpossible(i)){
-                alpha = Math.max(alpha, MinValor(aux, i, color, alpha, beta, profundidad-1));
+            Tauler newTauler = new Tauler(t);
+            if(newTauler.movpossible(i)){
+                newTauler.afegeix(i, color);
+                // Solución??
+                alpha = Math.max(valor, MinValor(newTauler, i, color, alpha, beta, profundidad-1));
             }
             // Cortamos ramas
             if(beta <= valor) return valor;
@@ -145,9 +145,11 @@ public class ConnectaBroIo implements Jugador, IAuto {
         
         Integer valor = Integer.MAX_VALUE; // +inf
         for(int i=0; i < t.getMida(); i++){
-            Tauler aux = new Tauler(t);
-            if(aux.movpossible(i)){
-                alpha = Math.min(alpha, MaxValor(aux, i, color, alpha, beta, profundidad-1));
+            Tauler newTauler = new Tauler(t);
+            if(newTauler.movpossible(i)){
+                newTauler.afegeix(i, color);
+                // Solución
+                alpha = Math.min(alpha, MaxValor(newTauler, i, color, alpha, beta, profundidad-1));
             }
             // Cortamos ramas
             if(valor <= alpha) return valor;
