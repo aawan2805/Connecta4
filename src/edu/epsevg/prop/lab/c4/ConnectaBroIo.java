@@ -122,7 +122,15 @@ public class ConnectaBroIo implements Jugador, IAuto {
         
         return valor;
     }
-
+    
+    public boolean esTerminal(Tauler t, int columna, int color){
+        boolean res = false;
+        if(t.solucio(columna, color)){
+            res = true;
+        }
+        if(!t.espotmoure()) res = true;
+        return res;
+    }
     
     public Integer Eval(Tauler t, int color){
         return 0;
