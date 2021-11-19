@@ -226,5 +226,97 @@ public class ConnectaBroIo implements Jugador, IAuto {
                 (50*agrupacionesEnemigas.get(1)) - (75*agrupacionesEnemigas.get(2)) - (100*agrupacionesEnemigas.get(3)) - (2000*agrupacionesEnemigas.get(4)));
         return heur;
     }
+    
+    
+      private int Recorregut(Tauler t, int f, int c, int color, String TipusMoviment) {
+      int colmax= (int)(t.getMida());
+      int nostres = 0;
+      int contador = 0;
+      int col = c;
+      int fila = f;
+      boolean target = false;
+      String DiagonalEsquerreAvall ="DiagonalEsquerreAvall";
+      String DiagonalEsquerreAmunt ="DiagonalEsquerreAmunt";
+      String DiagonalDretaAvall ="DiagonalDretaAvall";
+      String DiagonalDretaAmunt ="DiagonalDretaAmunt";
+      String HoritzonalEsquerra ="HoritzonalEsquerra";
+      String HoritzonalDreta ="HoritzonalDreta";
+      //Comprobar que la posició que volem mirar està dintre del tauler, forma part de les 4 que volem mirar i no ha incomplert cap restriccio
+      //Restriccions: només pot haver-hi un mateix color o buits, si està buit la de sota no pot estar buida
+      while (col >= 0 && col < colmax && fila >= 0 && fila < colmax && !target && contador < 4) {
+          int coloract=t.getColor(fila, col);
+          if ((coloract != color) && (coloract!=0)) {//si  donde estamos es del rival, nos salimos
+              target = true;
+          }
+          else if (fila > 0 && coloract==0 && t.getColor(fila - 1, col) == 0) {//mira si hay alguna ficha debajo, es para las diagonales y horizontales, si no hay nada salimos
+              target = true;
+          }
+          else if (coloract == color) {
+              ++nostres;
+          }
+          ++contador;
+          if (DiagonalEsquerreAvall.equals(TipusMoviment)){
+            col=col-1;
+            fila=fila-1;
+          }
+          else if (DiagonalEsquerreAmunt.equals(TipusMoviment)){
+            col=col-1;
+            fila=fila+1;
+          }
+          else if (DiagonalDretaAvall.equals(TipusMoviment)){
+            col=col+1;
+            fila=fila-1;
+          }
+          else if (DiagonalDretaAmunt.equals(TipusMoviment)){
+            col=col+1;
+            fila=fila+1;
+          }
+          else if (HoritzonalEsquerra.equals(TipusMoviment)){
+            col=col-1;
+          }
+          else if (HoritzonalDreta.equals(TipusMoviment)){
+            col=col+1;
+          }
+          else{
+            //dades incorrectes
+            target=true;
+            break;
+          }
+      }
+      if (target==true && contador!=4) {
+        //No s'ha complert una restriccio o ha quedat fora del tauler
+          nostres = 0;
+      }
+      return nostres;
+  }
+
+  private float HeuristicaRecorregutVertical(Tauler t, int c, int color, float heur){
+    int coloract=0; //color de la primera posició
+    int seguides=0; //quantes seguides tenim?
+    int fil=0; //fila per saber el color que mirem
+    for (int fila=t.getMida()-1; fila>=0; --fila){
+      int colorpos=t.getColor(fila, c);
+      if(t.getColor(fila, c)!=0){ //si no es 0 començem a comptar
+        if(seguides==0){  //inicialitzem valors
+          coloract=colorpos;
+          fil=fila;   //posteriorment per la heuristica
+          ++seguides;
+        }
+        else if (colorpos!=coloract){
+          heur=calculaheuristica(t, heur, seguides, fil, c, color);
+          return heur;
+        }
+        else{
+          ++seguides;
+        }
+      }
+      if(seguides>=4){
+        heur=calculaheuristica(t, heur, seguides, fil, c, color);
+
+        return heur;
+      }
+    }
+    return heur;
+  }
 
 }
