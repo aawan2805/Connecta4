@@ -38,13 +38,13 @@ public class ConnectaBroIo implements Jugador, IAuto {
                     // El primer turno es del enemigo -> -color
                     Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad-1);
                     System.out.println("MIN -> " + min);
-                    if(min > min){
+                    if(valor < min){
                         millorMoviment = i;
                         valor = min;
                     }
                 } 
             }
-            
+
             i++;
         }
         System.out.println("COL -> " + millorMoviment);
@@ -131,9 +131,12 @@ public class ConnectaBroIo implements Jugador, IAuto {
             Tauler newTauler = new Tauler(t);
             if(newTauler.movpossible(i)){
                 newTauler.afegeix(i, color);
-                // TODO: Solución?? Devolver minInf??
+                // TODO: Solución?? Devolver maxInf
+                if(t.solucio(i, color)){
+                    return Integer.MAX_VALUE;
+                }
                 // TODO: profundidad -1???
-                alpha = Math.max(valor, MinValor(newTauler, i, color, alpha, beta, profundidad-1));
+                valor = Math.max(valor, MinValor(newTauler, i, color, alpha, beta, profundidad-1));
             }
             // Cortamos ramas
             if(beta <= valor) return valor;
@@ -154,9 +157,12 @@ public class ConnectaBroIo implements Jugador, IAuto {
             Tauler newTauler = new Tauler(t);
             if(newTauler.movpossible(i)){
                 newTauler.afegeix(i, color);
-                // TODO: Solución?? Devolver maxInf???
+                // TODO: Solución?? Devolver minInf
+                if(t.solucio(i, color)){
+                    return Integer.MIN_VALUE;
+                }
                 // Es mi turno, me toca maximizar -> -color
-                alpha = Math.min(alpha, MaxValor(newTauler, i, -color, alpha, beta, profundidad-1));
+                valor = Math.min(alpha, MaxValor(newTauler, i, -color, alpha, beta, profundidad-1));
             }
             // Cortamos ramas
             if(valor <= alpha) return valor;
@@ -199,6 +205,5 @@ public class ConnectaBroIo implements Jugador, IAuto {
         
         return h;
     }
-  
 
 }
