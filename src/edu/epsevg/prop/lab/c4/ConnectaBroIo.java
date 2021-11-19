@@ -33,18 +33,13 @@ public class ConnectaBroIo implements Jugador, IAuto {
             Tauler aux = new Tauler(t);
             if(aux.movpossible(i)){ // Miramos si se puede hacer el movimiento
                 aux.afegeix(i, color);
-                if(aux.solucio(i, color)){
-                    solution = true;
+                // El primer turno es del enemigo -> -color
+                Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad-1);
+                System.out.println("MIN -> " + min);
+                if(valor < min){
                     millorMoviment = i;
-                } else {
-                    // El primer turno es del enemigo -> -color
-                    Integer min = MinValor(aux, i, -color, Alpha, Beta, profundidad-1);
-                    System.out.println("MIN -> " + min);
-                    if(valor < min){
-                        millorMoviment = i;
-                        valor = min;
-                    }
-                } 
+                    valor = min;
+                }
             }
 
             i++;
@@ -197,15 +192,14 @@ public class ConnectaBroIo implements Jugador, IAuto {
      * @return 
      */
     public Integer Eval(Tauler t, int color){
-        Integer h = 0;
-    
+        return this.heuristica(t, color);
+        
         // Mirar vertical
         // Mirar horizontal
         
         // Mirar diagonal
-        
-        return h;
     }
+    
     /*
     public Integer calculaEval(Integer numFichasPropias, Integer numFichasEnemigas) {
         Integer heur = 100;
@@ -220,11 +214,192 @@ public class ConnectaBroIo implements Jugador, IAuto {
         
         return heur;
     }
-*/
+    */
+    
     public Integer calculaEval (HashMap<Integer, Integer> agrupacionesPropias, HashMap<Integer, Integer> agrupacionesEnemigas){
         Integer heur = (100*agrupacionesPropias.get(1)) + (100*agrupacionesPropias.get(2)) + (100*agrupacionesPropias.get(3)) + (2000*agrupacionesPropias.get(4) -
                 (50*agrupacionesEnemigas.get(1)) - (75*agrupacionesEnemigas.get(2)) - (100*agrupacionesEnemigas.get(3)) - (2000*agrupacionesEnemigas.get(4)));
         return heur;
     }
+    
+    public HashMap<Integer, Integer> CuentaAgrupaciones(Tauler t, int color){
+        HashMap<Integer, Integer> res = new HashMap<>();
+        res.put(1, 0);
+        res.put(2, 0);
+        res.put(3, 0);
+        res.put(4, 0);
+        
+        int columnaVertical = 0;
+        
+        for (int i = 0; i < t.getMida(); i++) {
+            for (int j = 0; j < t.getMida(); j++) {
+                if(t.getColor(i, j) != 0){
+                    if(t.getColor(i, j) == color) {
+                        
+                        
+                        int x = 1;
+                        // Vertical
+                        if((i+1) <= t.getMida() && t.getColor(i+1, j) == color){
+                            x += 1;
+                            if((i+2) <= t.getMida() && t.getColor(i+2, j) == color){
+                                x += 1;
+                                if((i+3) <= t.getMida() && t.getColor(i+3, j) == color){
+                                    x += 1;
+                                }
+                            }
+                        }
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        System.out.println("Alineadas -> " + x);
+                    }
+                }
+            }
+        }
+        
+        return res;
+    }
+    
+    
+  private Integer heuristica (Tauler t, int color){
+    Integer heu = 0;
+    int colmax= t.getMida();
+    int num = 0;
+    for (int fila=0; fila<colmax; ++fila) {
+      //LLAMAR A LA VERTICAL Y USAR LA FILA COMO SI FUERA UNA COLUMNA
+        heu=HeuristicaRecorregutVertical(t, fila,color,heu);
+        for (int col = 0; col <colmax; ++col) {
+          //Per cada posició ens interessa mirar totes les possiblitats, amunt, avall, dreta, esquerra i les 4 diagonals
+          num=Recorregut(t, fila, col, t.getColor(fila, col), "DiagonalEsquerreAvall");
+          heu=calculaheuristica(t, heu, num, fila, col, color);
+          num=Recorregut(t, fila, col, t.getColor(fila, col), "DiagonalEsquerreAmunt");
+          heu=calculaheuristica(t, heu, num, fila, col, color);
+          num=Recorregut(t, fila, col, t.getColor(fila, col), "DiagonalDretaAvall");
+          heu=calculaheuristica(t, heu, num, fila, col, color);
+          num=Recorregut(t, fila, col, t.getColor(fila, col), "DiagonalDretaAmunt");
+          heu=calculaheuristica(t, heu, num, fila, col, color);
+          num=Recorregut(t, fila, col, t.getColor(fila, col), "HoritzonalEsquerra");
+          heu=calculaheuristica(t, heu, num, fila, col, color);
+          num=Recorregut(t, fila, col, t.getColor(fila, col), "HoritzonalDreta");
+          heu=calculaheuristica(t, heu, num, fila, col, color);
+        }
+    }
+    return heu;
+  }
+
+  private Integer calculaheuristica (Tauler t, Integer heuactual, int quantesnostres, int fila, int col, int color){
+    //Si el color es el nostre serà 1 pel que serà positiu i se sumarà a la heuristicaactua
+    //Si el color es el de l'enemic serà -1 i per tant al ser un número negatiu es restarà a la heuristica
+    //Formula=2nostres+20*3nostres+1000*4nostres - (2seves+20*3seves+1000*4seves)
+    if (quantesnostres == 2) {
+        heuactual = heuactual + 300*t.getColor(fila, col) * color;
+    }
+    else if (quantesnostres == 3) {
+        heuactual = heuactual + 500 * t.getColor(fila, col) * color;
+    }
+    else if (quantesnostres >= 4) {
+        heuactual = heuactual + 100000 * t.getColor(fila, col) * color;
+    }
+    return heuactual;
+  }
+
+  private Integer Recorregut(Tauler t, int f, int c, int color, String TipusMoviment) {
+      int colmax= t.getMida();
+      Integer nostres = 0;
+      int contador = 0;
+      int col = c;
+      int fila = f;
+      boolean target = false;
+      String DiagonalEsquerreAvall ="DiagonalEsquerreAvall";
+      String DiagonalEsquerreAmunt ="DiagonalEsquerreAmunt";
+      String DiagonalDretaAvall ="DiagonalDretaAvall";
+      String DiagonalDretaAmunt ="DiagonalDretaAmunt";
+      String HoritzonalEsquerra ="HoritzonalEsquerra";
+      String HoritzonalDreta ="HoritzonalDreta";
+      //Comprobar que la posició que volem mirar està dintre del tauler, forma part de les 4 que volem mirar i no ha incomplert cap restriccio
+      //Restriccions: només pot haver-hi un mateix color o buits, si està buit la de sota no pot estar buida
+      while (col >= 0 && col < colmax && fila >= 0 && fila < colmax && !target && contador < 4) {
+          int coloract=t.getColor(fila, col);
+          if ((coloract != color) && (coloract!=0)) {//si  donde estamos es del rival, nos salimos
+              target = true;
+          }
+          else if (fila > 0 && coloract==0 && t.getColor(fila - 1, col) == 0) {//mira si hay alguna ficha debajo, es para las diagonales y horizontales, si no hay nada salimos
+              target = true;
+          }
+          else if (coloract == color) {
+              ++nostres;
+          }
+          ++contador;
+          if (DiagonalEsquerreAvall.equals(TipusMoviment)){
+            col=col-1;
+            fila=fila-1;
+          }
+          else if (DiagonalEsquerreAmunt.equals(TipusMoviment)){
+            col=col-1;
+            fila=fila+1;
+          }
+          else if (DiagonalDretaAvall.equals(TipusMoviment)){
+            col=col+1;
+            fila=fila-1;
+          }
+          else if (DiagonalDretaAmunt.equals(TipusMoviment)){
+            col=col+1;
+            fila=fila+1;
+          }
+          else if (HoritzonalEsquerra.equals(TipusMoviment)){
+            col=col-1;
+          }
+          else if (HoritzonalDreta.equals(TipusMoviment)){
+            col=col+1;
+          }
+          else{
+            //dades incorrectes
+            target=true;
+            break;
+          }
+      }
+      if (target==true && contador!=4) {
+        //No s'ha complert una restriccio o ha quedat fora del tauler
+          nostres = 0;
+      }
+      return nostres;
+  }
+
+  private Integer HeuristicaRecorregutVertical(Tauler t, int c, int color, Integer heur){
+    int coloract=0; //color de la primera posició
+    int seguides=0; //quantes seguides tenim?
+    int fil=0; //fila per saber el color que mirem
+    for (int fila=t.getMida()-1; fila>=0; --fila){
+      int colorpos=t.getColor(fila, c);
+      if(t.getColor(fila, c)!=0){ //si no es 0 començem a comptar
+        if(seguides==0){  //inicialitzem valors
+          coloract=colorpos;
+          fil=fila;   //posteriorment per la heuristica
+          ++seguides;
+        }
+        else if (colorpos!=coloract){
+          heur=calculaheuristica(t, heur, seguides, fil, c, color);
+          return heur;
+        }
+        else{
+          ++seguides;
+        }
+      }
+      if(seguides>=4){
+        heur=calculaheuristica(t, heur, seguides, fil, c, color);
+
+        return heur;
+      }
+    }
+    return heur;
+  }
+
+
 
 }
