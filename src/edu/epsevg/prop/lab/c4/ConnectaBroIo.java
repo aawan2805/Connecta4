@@ -1,5 +1,7 @@
 package edu.epsevg.prop.lab.c4;
 
+import java.util.HashMap;
+
 /**
  * Jugador aleatori
  * "Alea jacta est"
@@ -196,14 +198,33 @@ public class ConnectaBroIo implements Jugador, IAuto {
      */
     public Integer Eval(Tauler t, int color){
         Integer h = 0;
-        
+    
         // Mirar vertical
-        
         // Mirar horizontal
         
         // Mirar diagonal
         
         return h;
+    }
+    /*
+    public Integer calculaEval(Integer numFichasPropias, Integer numFichasEnemigas) {
+        Integer heur = 100;
+        if (numFichasPropias == 1) heur*=numFichasPropias;
+        else if (numFichasPropias == 2) heur*=numFichasPropias;
+        else if (numFichasPropias == 3) heur*=numFichasPropias;
+        else if (numFichasPropias == 4) heur*=numFichasPropias;
+        if (numFichasEnemigas == 1) heur-=50;
+        else if (numFichasPropias == 2) heur-=75;
+        else if (numFichasPropias == 3) heur-=100;
+        else if (numFichasPropias == 4) heur-=(heur*2);
+        
+        return heur;
+    }
+*/
+    public Integer calculaEval (HashMap<Integer, Integer> agrupacionesPropias, HashMap<Integer, Integer> agrupacionesEnemigas){
+        Integer heur = (100*agrupacionesPropias.get(1)) + (100*agrupacionesPropias.get(2)) + (100*agrupacionesPropias.get(3)) + (2000*agrupacionesPropias.get(4) -
+                (50*agrupacionesEnemigas.get(1)) - (75*agrupacionesEnemigas.get(2)) - (100*agrupacionesEnemigas.get(3)) - (2000*agrupacionesEnemigas.get(4)));
+        return heur;
     }
 
 }
