@@ -166,7 +166,7 @@ public class ConnectaBroIo implements Jugador, IAuto {
             }
             // Cortamos ramas
             if(valor <= alpha) return valor;
-            alpha = Math.min(valor, alpha);
+            beta = Math.min(valor, alpha);
         }
         
         return valor;
