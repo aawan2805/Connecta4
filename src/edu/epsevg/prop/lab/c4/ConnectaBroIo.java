@@ -400,6 +400,4 @@ public class ConnectaBroIo implements Jugador, IAuto {
     return heur;
   }
 
-
-
 }
